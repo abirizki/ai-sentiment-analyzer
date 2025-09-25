@@ -28,6 +28,8 @@ Video Demo
 # (GIF)
 
 ![Demo Video](assets/rec_1.gif)
+![Demo Video](assets/rec_2.gif)
+![Demo Video](assets/rec_3.gif)
 
 *No installation required • Instant access to full functionality • Enterprise-ready performance*
 
