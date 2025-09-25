@@ -24,8 +24,12 @@ A **cutting-edge sentiment analysis platform** that transforms unstructured text
 
 Sentiment Analyzer Screen shoot.
 ---
+Video Demo
+### (GIF)
 
-
+![Demo Video](assets/rec1.gif)
+![Demo Video](assets/rec2.gif)
+![Demo Video](assets/rec3.gif)
 
 *No installation required • Instant access to full functionality • Enterprise-ready performance*
 
