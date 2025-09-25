@@ -27,9 +27,9 @@ Sentiment Analyzer Screen shoot.
 Video Demo
 ### (GIF)
 
-![Demo Video](assets/rec1.gif)
-![Demo Video](assets/rec2.gif)
-![Demo Video](assets/rec3.gif)
+![Demo Video](assets/rec 1.gif)
+![Demo Video](assets/rec 2.gif)
+![Demo Video](assets/rec 3.gif)
 
 *No installation required • Instant access to full functionality • Enterprise-ready performance*
 
