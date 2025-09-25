@@ -13,7 +13,17 @@ A **cutting-edge sentiment analysis platform** that transforms unstructured text
 
 **🎯 Perfect For:** Customer Experience Analysis • Social Media Monitoring • Market Research • Product Feedback Analysis
 
-## 🚀 Live Demo
+## 🚀 Screen shoot 
+---
+### Contoh Tampilan Gambar
+
+![Screen shoot 1 ](assets/sc1.png)
+![Screen shoot 1 ](assets/sc2.png)
+![Screen shoot 1 ](assets/sc3.png)
+![Screen shoot 1 ](assets/sc4.png)
+
+Sentiment Analyzer Screen shoot.
+---
 
 [**👉 Experience the Live Application Here**](https://abirizki-ai-sentiment-analyzer.streamlit.app)
 
