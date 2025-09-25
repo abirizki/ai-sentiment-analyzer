@@ -25,7 +25,7 @@ A **cutting-edge sentiment analysis platform** that transforms unstructured text
 Sentiment Analyzer Screen shoot.
 ---
 
-[**👉 Experience the Live Application Here**](https://abirizki-ai-sentiment-analyzer.streamlit.app)
+
 
 *No installation required • Instant access to full functionality • Enterprise-ready performance*
 
