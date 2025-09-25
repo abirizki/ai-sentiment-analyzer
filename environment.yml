@@ -1,0 +1,9 @@
+name: sentiment
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9
+  - streamlit=1.38.0
+  - nltk=3.8.1
+  - openai=1.45.0
