@@ -216,4 +216,193 @@ if analysis_type == "Single Text":
                 else:
                     st.info("🔑 Add Gemini API key in secrets for AI features")
 
-# ... (lanjutkan dengan bagian Batch Processing dan Dashboard yang sama, dengan error handling)
+# ===== BATCH PROCESSING =====
+elif analysis_type == "Batch Processing":
+    st.header("📁 Batch Text Analysis")
+    
+    st.info("💡 **Professional Use Case**: Analyze multiple customer reviews, social media comments, or survey responses at scale.")
+    
+    batch_input = st.text_area(
+        "Enter multiple texts (one per line):",
+        """This product is amazing! I love it.
+The quality could be better.
+It's okay, nothing special.
+Outstanding service and support.
+Very disappointed with the purchase.
+Good value for money.""",
+        height=200
+    )
+    
+    if st.button("🚀 Process Batch Analysis", type="primary"):
+        if not NLTK_AVAILABLE:
+            st.error("❌ Sentiment analysis unavailable. Required packages not installed.")
+        elif batch_input.strip():
+            texts = [line.strip() for line in batch_input.split('\n') if line.strip()]
+            
+            progress_bar = st.progress(0)
+            results = []
+            
+            for i, text in enumerate(texts):
+                scores = sia.polarity_scores(text)
+                compound = scores['compound']
+                
+                if compound >= 0.05:
+                    sentiment = "Positive"
+                    emoji = "😊"
+                elif compound <= -0.05:
+                    sentiment = "Negative" 
+                    emoji = "😞"
+                else:
+                    sentiment = "Neutral"
+                    emoji = "😐"
+                
+                results.append({
+                    'Text': text,
+                    'Sentiment': f"{sentiment} {emoji}",
+                    'Score': round(compound, 3),
+                    'Positive': round(scores['pos'], 3),
+                    'Negative': round(scores['neg'], 3),
+                    'Neutral': round(scores['neu'], 3)
+                })
+                progress_bar.progress((i + 1) / len(texts))
+            
+            df = pd.DataFrame(results)
+            
+            # Display results
+            st.subheader("📋 Analysis Results")
+            st.dataframe(df, use_container_width=True)
+            
+            # Summary statistics
+            col1, col2, col3, col4 = st.columns(4)
+            positive_count = len(df[df['Score'] > 0.05])
+            negative_count = len(df[df['Score'] < -0.05])
+            neutral_count = len(df[(df['Score'] >= -0.05) & (df['Score'] <= 0.05)])
+            
+            with col1:
+                st.metric("Total Texts", len(df))
+            with col2:
+                st.metric("Positive", positive_count, delta=f"{(positive_count/len(df)*100):.1f}%")
+            with col3:
+                st.metric("Negative", negative_count)
+            with col4:
+                st.metric("Neutral", neutral_count)
+            
+            # Visualizations
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                # Sentiment distribution
+                sentiment_counts = df['Sentiment'].str.split(' ').str[0].value_counts()
+                st.altair_chart(alt.Chart(pd.DataFrame({
+                    'Sentiment': sentiment_counts.index,
+                    'Count': sentiment_counts.values
+                })).mark_bar().encode(
+                    x='Sentiment',
+                    y='Count',
+                    color='Sentiment'
+                ).properties(title='Sentiment Distribution'), use_container_width=True)
+            
+            with col2:
+                # Score distribution
+                st.altair_chart(alt.Chart(df).mark_bar().encode(
+                    alt.X("Score:Q", bin=alt.Bin(maxbins=20)),
+                    y='count()',
+                    color=alt.Color('Score:Q', scale=alt.Scale(scheme='redyellowgreen'))
+                ).properties(title='Score Distribution'), use_container_width=True)
+            
+            # Export functionality
+            csv_data = df.to_csv(index=False)
+            st.download_button(
+                label="📥 Export Results as CSV",
+                data=csv_data,
+                file_name=f"sentiment_analysis_{datetime.now().strftime('%Y%m%d_%H%M')}.csv",
+                mime="text/csv"
+            )
+        else:
+            st.warning("⚠️ Please enter some text to analyze")
+
+# ===== REAL-TIME DASHBOARD =====
+else:
+    st.header("📊 Real-time Sentiment Dashboard")
+    st.info("💡 **Enterprise Feature**: Monitor sentiment trends across multiple data sources in real-time.")
+    
+    # Demo dashboard dengan sample data
+    try:
+        # Generate sample data untuk demo
+        dates = pd.date_range('2024-01-01', periods=50, freq='H')
+        sentiment_scores = np.random.normal(0, 0.3, 50).cumsum()
+        
+        sample_data = pd.DataFrame({
+            'Time': dates,
+            'Sentiment_Score': sentiment_scores
+        })
+        sample_data['Sentiment'] = ['Positive' if x > 0 else 'Negative' if x < 0 else 'Neutral' for x in sample_data['Sentiment_Score']]
+        
+        # Real-time chart
+        st.subheader("📈 Live Sentiment Trend")
+        line_chart = alt.Chart(sample_data).mark_line().encode(
+            x='Time:T',
+            y='Sentiment_Score:Q',
+            color=alt.value('#FF6B6B')
+        ).properties(height=300, title='Real-time Sentiment Monitoring')
+        st.altair_chart(line_chart, use_container_width=True)
+        
+        # Summary metrics
+        st.subheader("📊 Dashboard Metrics")
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            current_sentiment = "Positive" if sentiment_scores[-1] > 0 else "Negative" if sentiment_scores[-1] < 0 else "Neutral"
+            st.metric("Current Sentiment", current_sentiment)
+        
+        with col2:
+            st.metric("Average Score", f"{np.mean(sentiment_scores):.2f}")
+        
+        with col3:
+            positive_trends = len([x for x in sentiment_scores if x > 0])
+            st.metric("Positive Trends", f"{positive_trends}/{len(sentiment_scores)}")
+        
+        with col4:
+            st.metric("Data Points", len(sample_data))
+        
+        # Recent sentiment distribution
+        st.subheader("🎯 Sentiment Overview")
+        col1, col2 = st.columns([2, 1])
+        
+        with col1:
+            sentiment_counts = sample_data['Sentiment'].value_counts()
+            pie_chart = alt.Chart(pd.DataFrame({
+                'Sentiment': sentiment_counts.index,
+                'Count': sentiment_counts.values
+            })).mark_arc().encode(
+                theta='Count:Q',
+                color='Sentiment:N',
+                tooltip=['Sentiment', 'Count']
+            ).properties(title='Current Sentiment Distribution')
+            st.altair_chart(pie_chart, use_container_width=True)
+        
+        with col2:
+            st.subheader("Recent Data")
+            st.dataframe(sample_data.tail(5)[['Time', 'Sentiment_Score', 'Sentiment']], 
+                        use_container_width=True)
+        
+    except Exception as e:
+        st.error(f"Dashboard error: {e}")
+        st.info("This is a demo dashboard. Connect to live data sources for real-time monitoring.")
+    
+    st.info("""
+    **🔒 Premium Integration Options:**
+    - Social media APIs (Twitter, Reddit, Facebook)
+    - Customer review platforms (Amazon, Yelp, G2)
+    - CRM systems (Salesforce, HubSpot)
+    - Custom database connections
+    """)
+
+# ===== FOOTER =====
+st.markdown("---")
+st.markdown("""
+<div style='text-align: center'>
+    <p><strong>🚀 Professional Sentiment Analysis Solution</strong></p>
+    <p>Built with cutting-edge AI technology • Ready for enterprise deployment</p>
+</div>
+""", unsafe_allow_html=True)
